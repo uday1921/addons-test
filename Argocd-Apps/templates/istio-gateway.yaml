@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ lower .Values.clusterName}}-istio-gateway
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-options: Prune=true
+spec:
+  destination:
+    namespace: {{ .Values.istiogateway.namespace }}
+    server: {{ .Values.server }}
+  project: {{ .Values.project }}
+  sources:
+    - repoURL: {{ .Values.istiogateway.repoURL }}
+      targetRevision: {{ .Values.istiogateway.chartVersion }}
+      chart: {{ .Values.istiogateway.chart }}
+      helm:
+        valueFiles:
+          - $values/Addons/istio/istio-gateway.yaml
+        values: |
+          service:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-name: {{ .Values.istiogateway.loadbalancername }}
+              service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: {{ .Values.istiogateway.loadbalanceradditionaltags }}
+    - repoURL: {{ .Values.repoURL }}
+      targetRevision: {{ .Values.targetRevision }}
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd

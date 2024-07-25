@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Values.gateway.name }}
+  namespace: {{ .Values.Argocd.namespace }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: {{ .Values.gateway.http_port }}
+      name: {{ .Values.gateway.http_port_name }}
+      protocol: HTTP
+    hosts:
+    - {{ .Values.virtualservice.host }}
+  # - port:
+  #     number: {{ .Values.gateway.https_port }}
+  #     name: {{ .Values.gateway.https_port_name }}
+  #     protocol: HTTPS
+  #   hosts:
+  #   - {{ .Values.virtualservice.host }}

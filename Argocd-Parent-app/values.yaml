@@ -1,0 +1,11 @@
+project: k8s-addons
+targetRevision: ${targetRevision}
+repoURL : git@github.com:msi-cloud-it/MCAP_Addons.git
+path: Argocd-Apps
+valuesFile : values-${environment}.yaml
+loadbalancername: ${loadbalancername}
+loadbalanceradditionaltags: ${loadbalanceradditionaltags}
+argocdurl: ${argocd_url}
+server: ${server}
+cluster_type: ${cluster_type}
+clusterName: ${clusterName}

@@ -1,0 +1,10 @@
+apiVersion: v2
+version: 0.0.1
+name: fluentbit-config-map
+description: Used to deploy fluentbit configmap.
+keywords:
+  - Fluentbit
+  - EKS
+maintainers:
+  - name: MBQD73
+    email: mcap@motorolasolutions.com

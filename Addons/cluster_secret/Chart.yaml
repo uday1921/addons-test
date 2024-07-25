@@ -1,0 +1,11 @@
+apiVersion: v2
+version: 0.0.1
+name: Spoke Cluster Secret
+description: Used to deploy Argocd addons to SPOKE EKS cluster.
+keywords:
+  - Argod
+  - EKS
+  - K8s
+maintainers:
+  - name: QHKT64
+    email: qhkt64@motorolasolutions.com

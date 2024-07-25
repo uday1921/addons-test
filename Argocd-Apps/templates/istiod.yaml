@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ lower .Values.clusterName}}-istiod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=true
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  destination:
+    namespace: {{ .Values.istiod.namespace }}
+    server: {{ .Values.server }}
+  project: {{ .Values.project }}
+  sources:
+    - repoURL: {{ .Values.istiod.repoURL }}
+      targetRevision: {{ .Values.istiod.chartVersion }}
+      chart: {{ .Values.istiod.chart }}
+      helm:
+        valueFiles:
+          - $values/Addons/istio/istiod-values.yaml
+        values: |
+          pilot:
+            image: {{ .Values.istiod.image }}
+    - repoURL: {{ .Values.repoURL }}
+      targetRevision: {{ .Values.targetRevision }}
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+    syncOptions:
+      - CreateNamespace=true
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - Validate=true
+      - Prune=true
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: istio-validator-istio-system
+      jsonPointers:
+        - /webhooks/0/failurePolicy

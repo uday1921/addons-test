@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ lower .Values.clusterName}}-grafana-tempo
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=true
+    argocd.argoproj.io/sync-wave: "6"
+spec:
+  destination:
+    namespace: {{ .Values.tempo.namespace }}
+    server: {{ .Values.server }}
+  project: {{ .Values.project }}
+  sources:
+    - repoURL: {{ .Values.tempo.repoURL }}
+      targetRevision: {{ .Values.tempo.chartVersion }}
+      chart: {{ .Values.tempo.chart }}
+      helm:
+        valueFiles:
+          - $values/Addons/prometheus_grafana/tempo-values.yaml
+    - repoURL: {{ .Values.repoURL }}
+      targetRevision: {{ .Values.targetRevision }}
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+    syncOptions:
+      - ServerSideApply=true
+    

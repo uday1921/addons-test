@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ lower .Values.clusterName}}-kyverno
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=true
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+
+  destination:
+    namespace: {{ .Values.kyverno.namespace }}
+    server: {{ .Values.server }}
+  project: {{ .Values.project }}
+  source:
+    path: {{ .Values.kyverno.path }}
+    repoURL: {{ .Values.repoURL }}
+    targetRevision: {{ .Values.targetRevision }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=true

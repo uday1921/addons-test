@@ -1,0 +1,10 @@
+apiVersion: v2
+version: 0.0.1
+name: kyverno
+description: Used to deploy Argocd addons to EKS cluster.
+keywords:
+  - App of Apps
+  - EKS
+maintainers:
+  - name: QHKT64
+    email: qhkt64@motorolasolutions.com

@@ -1,0 +1,5 @@
+cluster_name: ${cluster_name}
+environment: ${environment}
+server: ${server}
+role: ${role}
+caData: ${caData}

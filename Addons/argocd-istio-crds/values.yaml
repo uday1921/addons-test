@@ -1,0 +1,14 @@
+Argocd:
+  namespace: argocd
+gateway:
+  name: argocd-gateway
+  http_port: 80
+  http_port_name: http
+  https_port: 443
+  https_port_name: https
+virtualservice:
+  name: argocd-virtualservice
+  host: argocd-url
+  service: argocd-server.argocd.svc.cluster.local
+  port: 80
+  prefix: /

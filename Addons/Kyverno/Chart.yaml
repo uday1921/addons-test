@@ -1,0 +1,24 @@
+apiVersion: v2
+version: 0.0.1
+name: kyverno
+description: Used to deploy kyverno to EKS cluster.
+keywords:
+  - kyverno
+  - Pod Security Policies
+  - EKS
+maintainers:
+  - name: QHKT64
+    email: qhkt64@motorolasolutions.com
+
+dependencies:
+  - name: kyverno
+    version: "3.1.0"
+    repository: https://kyverno.github.io/kyverno/
+    condition: kyverno.enabled
+    import-values:
+      - kyverno.admissionController.replicas
+      - kyverno.backgroundController.replicas
+      - kyverno.cleanupController.replicas
+      - kyverno.reportsController.replicas
+      - kyverno.config.resourceFiltersExcludeNamespaces
+      - kyverno.config.excludeKyvernoNamespace

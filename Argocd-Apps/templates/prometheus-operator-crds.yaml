@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ lower .Values.clusterName}}-prometheus-operator-crds
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  destination:
+    namespace: {{ .Values.prometheus.namespace }}
+    server: {{ .Values.server }}
+  project: {{ .Values.project }}
+  sources:
+    - repoURL: {{ .Values.prometheus.repoURL }}
+      targetRevision: {{ .Values.prometheus.crds_chartVersion }}
+      chart: {{ .Values.prometheus.crds_chart }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+    syncOptions:
+      - ServerSideApply=true
+      - createNamespace=true
+      - Prune=true
+  ignoreDifferences:
+      - group: apiextensions.k8s.io
+        kind: CustomResourceDefinition
+        namespace: monitoring
+        jsonPointers:
+          - /metadata/annotations
+      
+    

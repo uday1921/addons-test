@@ -1,0 +1,15 @@
+labels:
+  app: istio-gateway123456
+  istio: ingressgateway
+  release: istio
+service:
+  type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external # The external value for aws-load-balancer-type is what causes the AWS Load Balancer Controller, rather than the AWS cloud provider load balancer controller, to create the Network Load Balancer
+    service.beta.kubernetes.io/aws-load-balancer-name: load_balancer_name
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal # DO NOT CHANGE THIS TO internet-facing!
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:010880705595:certificate/2b992c9b-6f45-433b-aaa0-e94861d6afe2
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https # Only use SSL for HTTPS port (443) - to be removed in the future to make sure ALL the ELB ports are using SSL
+    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: ELBSecurityPolicy-TLS13-1-2-2021-06

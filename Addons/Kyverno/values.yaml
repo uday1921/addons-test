@@ -1,0 +1,26 @@
+kyverno:
+  admissionController:
+    replicas: 1
+  backgroundController:
+    replicas: 1
+  cleanupController:
+    replicas: 1
+  reportsController:
+    replicas: 1
+  config:
+    excludeKyvernoNamespace: true
+    webhooks:
+      - namespaceSelector:
+        matchExpressions:
+          - key: kubernetes.io/metadata.name
+            operator: NotIn
+            values:
+              - kube-system
+              - istio-system
+              - istio-ingress
+              - argocd
+              - twistlock
+              - monitoring
+              - fluentbit
+    #Any Namespace you want to exclude from Kyverno you can add thos4e namespaces in "values" as strings example ["kube-system", "kube-public", "kube-node-lease"]
+namespace: kyverno

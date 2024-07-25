@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Values.virtualservice.name }}
+  namespace: {{ .Values.Argocd.namespace }}
+spec:
+  hosts:
+  - {{ .Values.virtualservice.host }}
+  gateways:
+  - {{ printf "%s/%s" .Values.Argocd.namespace .Values.gateway.name }}
+  http:
+  - match:
+    - uri:
+        prefix: {{ .Values.virtualservice.prefix }}
+    route:
+    - destination:
+        host: {{ .Values.virtualservice.service }}
+        port:
+          number: {{ .Values.virtualservice.port }}

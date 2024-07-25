@@ -1,0 +1,86 @@
+name: Deploy Spoke Kubernetes Addons
+
+on:
+  workflow_dispatch:
+    inputs:
+      spoke_cluster_name:
+        description: "Spoke Cluster Name"
+        default: "IAC-EKS-01"
+        required: true
+      hub_cluster_name:
+        description: "Hub Cluster Name"
+        default: "MCAP-DEV-01"
+        required: true
+      environment:
+        description: "Environment Name"
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - uat
+          - prod
+        required: true
+      cluster_type:
+        description: "Cluster Type"
+        default: "hub"
+        type: choice
+        options:
+          - spoke
+        required: true
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.step1.outputs.runner }}
+    steps:
+      - name: Select runner
+        id: step1
+        run: |
+          if [ ${{ github.event.inputs.environment }} == dev ]; then
+            echo "::set-output name=runner::ubuntu"
+          elif [ ${{ github.event.inputs.environment }} == uat ]; then
+            echo "::set-output name=runner::limited-permission"  
+          else
+            echo "::set-output name=runner::devops-runner"
+          fi      
+          
+  Terraform_Deployment:
+    needs: [setup]
+    runs-on: ${{ needs.setup.outputs.runner }}
+    steps:
+      - name: Create the TF Vars file
+        uses: actions/checkout@v3
+
+        env:
+          REPO_SSH_KEY: ${{secrets.IT_GITHUB_SVC_KEY}}
+      - name: install yq and update tf vars
+        working-directory: ./
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+         
+          yq  -i '.sshPrivateKey = "${{secrets.IT_GITHUB_SVC_KEY}}"'  ${{ github.workspace }}/Addons/argocd-app-repo-crds/values.yaml
+          cat << EOF >> terraform-${{github.event.inputs.environment}}.tfvars
+          spoke_cluster_name = "${{github.event.inputs.spoke_cluster_name}}"
+          environment = "${{github.event.inputs.environment}}"
+          cluster_type = "${{github.event.inputs.cluster_type}}"
+          hub_cluster_name = "${{github.event.inputs.hub_cluster_name}}"
+
+          EOF
+          cat terraform-${{github.event.inputs.environment}}.tfvars
+          cat ${{ github.workspace }}/Addons/argocd-app-repo-crds/values.yaml
+          helm template ${{ github.workspace }}/Addons/argocd-app-repo-crds --debug
+          ls -l ${{ github.workspace }}/Argocd-Apps
+
+      - name: Terraform INIT
+        working-directory: ./        
+        run: |
+          terraform init -upgrade -backend-config="key=AWS/EKS/${{github.event.inputs.hub_cluster_name}}/argocd-addons/${{github.event.inputs.spoke_cluster_name}}/terraform.tfstate"
+      - name: Terraform Plan
+        working-directory: ./  
+        run: | 
+          terraform plan -var-file="terraform-${{github.event.inputs.environment}}.tfvars"
+      - name: Terraform Apply
+        run: |   
+          echo 'Terrform Apply'
+          terraform apply -auto-approve -var-file="terraform-${{github.event.inputs.environment}}.tfvars"

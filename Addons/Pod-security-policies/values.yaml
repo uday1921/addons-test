@@ -1,0 +1,24 @@
+AllowedrRegistries:
+  - docker.mot-solutions.com
+  - docker.io
+  - quay.io
+  - public.ecr.aws
+  - gcr.io
+  - ghcr.io
+  - registry.k8s.io 
+
+AllowedVolumesTypes:
+  - name
+  - configMap
+  - csi
+  - EmptyDir
+  - ephemeral
+  - persistentVolumeClaim
+  - secret
+  - ''
+AllowedCapabilities:
+  - NET_BIND_SERVICE
+  - SYS_TIME
+  - SYS_RESOURCE
+  - DAC_OVERRIDE
+  - NET_PROTO_UDP

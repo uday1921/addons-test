@@ -1,0 +1,10 @@
+apiVersion: v2
+version: 0.0.1
+name: argocd
+description: Used to deploy argocd Appproject and add repository.
+keywords:
+  - Argocd
+  - EKS
+maintainers:
+  - name: QHKT64
+    email: mcap@motorolasolutions.com

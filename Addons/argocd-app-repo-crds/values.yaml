@@ -1,0 +1,2 @@
+sshPrivateKey: repoSSHKEY
+repoURL: git@github.com:msi-cloud-it/MCAP_Addons.git

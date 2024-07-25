@@ -1,0 +1,59 @@
+alertmanager:
+  enabled: true
+crds:
+  enabled: false
+grafana:
+  enabled: true
+  ingress:
+    enabled: false
+prometheus:
+  enabled: true 
+  ingress:
+    enabled: false
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    storageSpec: 
+      volumeClaimTemplate:
+        metadata:
+          name: data
+        spec:
+          storageClassName: gp2
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+    additionalScrapeConfigs: |
+      - job_name: blackbox
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        scrape_interval: 60s
+        static_configs:
+          - targets:
+            - https://www.google.com
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: prometheus-blackbox-exporter.monitoring:9115
+      - job_name: 'grafana'
+        metrics_path: /metrics
+        static_configs:
+        - targets: ['kube-prometheus-stack-grafana.monitoring']
+      - job_name: 'kube-state-metrics'
+        metrics_path: /metrics
+        static_configs:
+        - targets: ['kube-prometheus-stack-kube-state-metrics.monitoring:8080']
+      - job_name: kubecost
+        honor_labels: true
+        scrape_interval: 1m
+        scrape_timeout: 10s
+        metrics_path: /metrics
+        scheme: http
+        dns_sd_configs:
+        - names:
+          - kubecost-cost-analyzer.kubecost.svc
+          type: 'A'
+          port: 9003

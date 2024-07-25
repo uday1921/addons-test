@@ -1,0 +1,63 @@
+
+project: k8s-addons
+targetRevision: main
+repoURL : git@github.com:msi-cloud-it/MCAP_Addons.git
+server: https://kubernetes.default.svc
+clusterName: test-cluster
+kyverno:
+  namespace: kyverno
+  path: Addons/Kyverno
+kyvernoPolicy:
+  namespace: kyverno
+  path: Addons/Pod-security-policies
+
+argocd:
+  namespace: istio-ingress
+  path: Addons/argocd-istio-crds
+  url: argocdurl
+
+istio:
+  namespace: istio-system
+  repoURL: 'https://istio-release.storage.googleapis.com/charts'
+  chart: base
+  chartVersion: 1.22.3
+  valuesFile: Addons/istio/isito-values.yaml
+
+istiod:
+  namespace: istio-system
+  repoURL: 'https://istio-release.storage.googleapis.com/charts'
+  chart: istiod
+  chartVersion: 1.22.3
+  valuesFile: Addons/istio/istiod-values.yaml
+  image: gcr.io/istio-release/pilot:1.22.1
+istiogateway:
+  namespace: istio-ingress
+  repoURL: 'https://istio-release.storage.googleapis.com/charts'
+  chart: gateway
+  chartVersion: 1.22.3
+  valuesFile: Addons/istio/istio-gateway-values.yaml
+  loadbalancername: my-trail-lb-inside
+  loadbalanceradditionaltags: clustername=test-cluster,environment=dev-inside
+
+prometheus:
+  namespace: monitoring
+  repoURL: 'https://prometheus-community.github.io/helm-charts'
+  chart: kube-prometheus-stack
+  crds_chart: prometheus-operator-crds
+  crds_chartVersion: 13.0.0
+  chartVersion: 60.4.0
+  valuesFile: Addons/prometheus_grafana/kube-prometheus-stack-values.yaml
+tempo:
+  namespace: monitoring
+  repoURL: 'https://grafana.github.io/helm-charts'
+  chart: tempo
+  chartVersion: 1.10.0
+  valuesFile: Addons/prometheus_grafana/tempo-values.yaml
+fluentbit:
+  namespace: fluentbit
+  repoURL: 'https://aws.github.io/eks-charts'
+  chart: aws-for-fluent-bit
+  chartVersion: 0.1.34
+  configmap_path: Addons/fluentbit
+  valuesFile: Addons/fluentbit/fluentbit_values.yaml
+cluster_type: hub

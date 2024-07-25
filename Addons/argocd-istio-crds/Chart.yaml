@@ -1,0 +1,12 @@
+apiVersion: v2
+version: 0.0.1
+name: argocd
+description: Used to deploy Istio VirtualService and gateways for the argocd.
+keywords:
+  - Argocd
+  - Istio
+  - VirtualService
+  - EKS
+maintainers:
+  - name: QHKT64
+    email: qhkt64@motorolasolutions.com

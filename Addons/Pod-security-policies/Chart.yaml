@@ -1,0 +1,11 @@
+apiVersion: v2
+version: 0.0.1
+name: pod-security-policies
+description: Kyverno policies for pod security
+keywords:
+  - Kyverno
+  - PodSecurityPolicies
+  - EKS
+maintainers:
+  - name: QHKT64
+    email: qhkt64@motorolasolutions.com
